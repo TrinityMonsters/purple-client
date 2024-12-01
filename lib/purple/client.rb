@@ -90,8 +90,13 @@ module Purple
         yield if block_given?
       end
 
-      def body(_type = nil, **structure, &block)
-        @current_resp.body = Responses::Body.new(structure:, response: @current_resp, transform: block)
+      def body(type = nil, **structure, &block)
+        case type
+        when :default
+          @current_resp.body = :default
+        else
+          @current_resp.body = Responses::Body.new(structure:, response: @current_resp, transform: block)
+        end
       end
 
       def method_missing(method_name, *args, &)

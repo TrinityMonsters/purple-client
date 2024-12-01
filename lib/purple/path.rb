@@ -53,7 +53,13 @@ module Purple
 
       resp_structure = responses.find { |resp| resp.status_code == response.status }
 
-      object = resp_structure.body.validate!(response.body, args) if resp_structure
+      object = if resp_structure.body.is_a?(Purple::Responses::Body)
+                 resp_structure.body.validate!(response.body, args)
+               elsif resp_structure.body == :default
+                 response.body
+               else
+                 {}
+               end
 
       client.callback&.call(url, params, headers, JSON.parse(response.body))
 
