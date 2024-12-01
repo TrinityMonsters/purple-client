@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
-require 'purple/client/path'
-require 'purple/client/request'
-require 'purple/client/requests/authorization'
-require 'purple/client/response'
-require 'purple/client/responses/body'
-require_relative "client/version"
+require 'purple/path'
+require 'purple/request'
+require 'purple/requests/authorization'
+require 'purple/response'
+require 'purple/responses/body'
+require_relative "version"
 
 module Purple
-  module Client
+  class Client
     class << self
       def domain(value = nil)
         if value.nil?
@@ -24,13 +24,13 @@ module Purple
         else
           @authorization = case type
                            when :bearer
-                             Purple::Client::Requests::Authorization.bearer_token(value)
+                             Purple::Requests::Authorization.bearer_token(value)
                            when :google_auth
-                             Purple::Client::Requests::Authorization.google_auth(**custom_options)
+                             Purple::Requests::Authorization.google_auth(**custom_options)
                            when :custom_headers
-                             Purple::Client::Requests::Authorization.custom_headers(custom_options)
+                             Purple::Requests::Authorization.custom_headers(custom_options)
                            when :custom_query
-                             Purple::Client::Requests::Authorization.custom_query(custom_options)
+                             Purple::Requests::Authorization.custom_query(custom_options)
                            end
         end
       end

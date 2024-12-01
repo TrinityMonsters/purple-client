@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require 'purple/client/responses'
-require 'purple/client/responses/object'
+require 'purple/responses'
+require 'purple/responses/object'
 
-class Purple::Client::Responses::Body
+class Purple::Responses::Body
   extend Dry::Initializer[undefined: false]
 
   class BodyStructureMismatchError < StandardError
@@ -55,7 +55,7 @@ class Purple::Client::Responses::Body
   private
 
   def create_object(body)
-    object = Class.new(Purple::Client::Responses::Object) do
+    object = Class.new(Purple::Responses::Object) do
       body.each do |key, value|
         define_method(key) { value }
       end

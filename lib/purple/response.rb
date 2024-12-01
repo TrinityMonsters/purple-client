@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Implements basic response object
-class Purple::Client::Response
+class Purple::Response
   extend Dry::Initializer[undefined: false]
 
   option :status

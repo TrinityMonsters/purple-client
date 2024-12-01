@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Purple::Client
+module Purple
   module Requests
     class Authorization
       class << self

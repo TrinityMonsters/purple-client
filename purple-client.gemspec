@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require_relative "lib/purple/client/version"
+require_relative "lib/purple/version"
 
 Gem::Specification.new do |spec|
   spec.name = "purple-client"
-  spec.version = Purple::Client::VERSION
+  spec.version = Purple::VERSION
   spec.authors = ["Pavel Kalashnikov"]
   spec.email = ["kalashnikovisme@gmail.com"]
 

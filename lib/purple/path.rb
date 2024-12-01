@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Purple::Client
+module Purple
   class Path
     extend Dry::Initializer[undefined: false]
 
@@ -9,7 +9,7 @@ module Purple::Client
     option :parent
     option :children, default: -> { [] }
     option :method, optional: true
-    option :request, optional: true, default: -> { Purple::Client::Request.new }
+    option :request, optional: true, default: -> { Purple::Request.new }
     option :responses, optional: true, default: -> { [] }
 
     def full_path
