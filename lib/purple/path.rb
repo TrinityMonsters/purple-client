@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'dry-initializer'
+
 module Purple
   class Path
     extend Dry::Initializer[undefined: false]
