@@ -69,12 +69,17 @@ class Purple::Responses::Body
   def check_structure!(object, substructure = structure)
     substructure.each do |key, value|
       if value.is_a?(Hash)
-        if value.key?(:optional) && value.key?(:type)
+        if options?(value)
           next if value[:optional]
+          next if value[:allow_blank] && object[key].blank?
 
           check_type!(object, key, value[:type])
         else
           check_structure!(object[key], substructure[key])
+        end
+      elsif value.is_a?(Array)
+        object[key].each do |item|
+          check_structure!(item, value[0])
         end
       else
         check_type!(object, key, value)
@@ -85,11 +90,15 @@ class Purple::Responses::Body
   def check_type!(object, key, expected_type)
     unless object.key?(key)
       raise BodyStructureMismatchError.new(key, expected_type, object[key], object),
-            "Missing field '#{key}' in response body. Body: #{object}"
+        "Missing field '#{key}' in response body. Body: #{object}"
     end
 
     return if object[key].is_a?(expected_type)
 
     raise BodyStructureMismatchError.new(key, expected_type, object[key], object)
+  end
+
+  def options?(hash)
+    hash.key?(:type) && (hash.key?(:optional) || hash.key?(:allow_blank))
   end
 end
