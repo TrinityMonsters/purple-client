@@ -53,20 +53,24 @@ module Purple
 
       resp_structure = responses.find { |resp| resp.status_code == response.status }
 
-      object = if resp_structure.body.is_a?(Purple::Responses::Body)
-                 resp_structure.body.validate!(response.body, args)
-               elsif resp_structure.body == :default
-                 response.body
-               else
-                 {}
-               end
-
-      client.callback&.call(url, params, headers, JSON.parse(response.body))
-
-      if block_given?
-        yield(resp_structure.status, object)
+      if resp_structure.nil?
+        raise "#{client.domain}/#{full_path} returns #{response.status}, but it is not defined in the client"
       else
-        object
+        object = if resp_structure.body.is_a?(Purple::Responses::Body)
+                   resp_structure.body.validate!(response.body, args)
+                 elsif resp_structure.body == :default
+                   response.body
+                 else
+                   {}
+                 end
+
+        client.callback&.call(url, params, headers, JSON.parse(response.body))
+
+        if block_given?
+          yield(resp_structure.status, object)
+        else
+          object
+        end
       end
     end
   end
