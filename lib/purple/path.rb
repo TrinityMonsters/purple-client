@@ -9,18 +9,30 @@ module Purple
     option :client
     option :name
     option :parent
+    option :is_param, default: -> { false }
     option :children, default: -> { [] }
     option :method, optional: true
     option :request, optional: true, default: -> { Purple::Request.new }
     option :responses, optional: true, default: -> { [] }
 
     def full_path
-      parent.nil? ? name : "#{parent.full_path}/#{name}"
+      current_path = is_param ? @param_value : name
+      parent.nil? ? current_path : "#{parent.full_path}/#{current_path}"
+    end
+
+    def with(*args)
+      @param_value = args.first
     end
 
     def method_missing(method_name, *args, &)
       if children.any? { |child| child.name == method_name }
-        children.find { |child| child.name == method_name }
+        child = children.find { |child| child.name == method_name }
+
+        if child.is_param
+          child.with(*args)
+        end
+
+        child.children.any? ? child : child.execute(*args)
       else
         super
       end

@@ -43,8 +43,8 @@ module Purple
         end
       end
 
-      def path(name, method: :get)
-        path = Path.new(name:, parent: @parent_path, method:, client: self)
+      def path(name, method: :get, is_param: false)
+        path = Path.new(name:, parent: @parent_path, method:, client: self, is_param:)
 
         @paths ||= []
         @paths << path
