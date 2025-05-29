@@ -55,7 +55,12 @@ module Purple
         conn.headers = headers
       end
 
+      unless client.domain.start_with?('http')
+        raise ArgumentError, "Invalid URL: #{client.domain}. Ensure you have set protocol (http/https) in the client domain."
+      end
+
       url = "#{client.domain}/#{full_path}"
+
       response = case method
                  when :get
                    connection.get(url, params)
