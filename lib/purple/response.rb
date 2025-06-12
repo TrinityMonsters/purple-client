@@ -16,7 +16,8 @@ class Purple::Response
     forbidden: 403,
     not_found: 404,
     too_many_requests: 429,
-    internal_server_error: 500
+    internal_server_error: 500,
+    gateway_timeout: 504,
   }.freeze
 
   def status_code
