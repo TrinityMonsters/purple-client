@@ -53,6 +53,8 @@ module Purple
 
       connection = Faraday.new(url: client.domain) do |conn|
         conn.headers = headers
+        conn.options.timeout = 600
+        conn.options.open_timeout = 600
       end
 
       unless client.domain.start_with?('http')
