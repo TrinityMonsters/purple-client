@@ -68,6 +68,13 @@ module Purple
                    connection.post(url, params.to_json)
                  end
 
+      parsed_body = begin
+        JSON.parse(response.body)
+      rescue JSON::ParserError
+        response.body
+      end
+      client.callback&.call(url, params, headers, parsed_body)
+
       resp_structure = responses.find { |resp| resp.status_code == response.status }
 
       if resp_structure.nil?
@@ -80,8 +87,6 @@ module Purple
                  else
                    {}
                  end
-
-        client.callback&.call(url, params, headers, JSON.parse(response.body))
 
         if block_given?
           yield(resp_structure.status, object)
