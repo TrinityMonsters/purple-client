@@ -43,6 +43,14 @@ module Purple
         end
       end
 
+      def callback_params(*args)
+        if args.empty?
+          @callback_params ||= []
+        else
+          @callback_params = args
+        end
+      end
+
       def path(name, method: :get, is_param: false)
         path = Path.new(name:, parent: @parent_path, method:, client: self, is_param:)
 

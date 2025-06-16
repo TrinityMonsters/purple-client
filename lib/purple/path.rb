@@ -81,7 +81,16 @@ module Purple
                    {}
                  end
 
-        client.callback&.call(url, params, headers, JSON.parse(response.body))
+        if client.callback
+          callback_args = [url, params, headers, JSON.parse(response.body)]
+          callback_args.concat(client.callback_params) if client.respond_to?(:callback_params)
+
+          if client.callback.lambda? && client.callback.arity >= 0
+            callback_args = callback_args.first(client.callback.arity)
+          end
+
+          client.callback.call(*callback_args)
+        end
 
         if block_given?
           yield(resp_structure.status, object)
