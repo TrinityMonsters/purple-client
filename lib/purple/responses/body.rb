@@ -82,7 +82,12 @@ class Purple::Responses::Body
           check_structure!(item, value[0])
         end
       else
-        check_type!(object, key, value)
+        if object.nil?
+          raise BodyStructureMismatchError.new(key, value, nil, object),
+            "Expected a non-nil value for '#{key}' in response body. Expected response structure: #{substructure}"
+        else
+          check_type!(object, key, value)
+        end
       end
     end
   end
