@@ -62,10 +62,16 @@ module Purple
       def root_method(method_name)
         current_path = @parent_path
 
-        define_singleton_method method_name do |**args, &block|
-          params = current_path.request.params.call(**args) if current_path.request.params.is_a?(Proc)
+        define_singleton_method method_name do |*call_args, **kw_args, &block|
+          if current_path.is_param
+            value = kw_args[current_path.name] || call_args.first
+            current_path.with(value)
+            kw_args[current_path.name] = value
+          end
 
-          current_path.execute(params, args, &block)
+          params = current_path.request.params.call(**kw_args) if current_path.request.params.is_a?(Proc)
+
+          current_path.execute(params, kw_args, &block)
         end
       end
 

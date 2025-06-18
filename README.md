@@ -56,7 +56,7 @@ class JobsClient < Purple::Client
 end
 
 # Performs GET https://api.example.com/jobs/123
-JobsClient.job(job_id: 123)
+JobsClient.job(123)
 ```
 
 ### Using authorization
