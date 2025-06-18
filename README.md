@@ -18,72 +18,86 @@ gem install purple-client
 
 ## Usage
 
-Below are some basic examples of how to define requests and call them.
+Below are some basic examples of how to define requests and call them. Each
+snippet defines a custom class that inherits from `Purple::Client`.
 
 ### Simple GET request
 
 ```ruby
-Purple::Client.domain 'https://api.example.com'
+class StatusClient < Purple::Client
+  domain 'https://api.example.com'
 
-Purple::Client.path :status do
-  response :ok do
-    body :default
+  path :status do
+    response :ok do
+      body :default
+    end
+    root_method :status
   end
-  root_method :status
 end
 
 # Performs GET https://api.example.com/status
-Purple::Client.status
+StatusClient.status
 ```
 
 ### Path with a dynamic parameter
 
 ```ruby
-Purple::Client.path :jobs do
-  path :job_id, is_param: true do
-    response :ok do
-      body id: Integer, name: String
+class JobsClient < Purple::Client
+  domain 'https://api.example.com'
+
+  path :jobs do
+    path :job_id, is_param: true do
+      response :ok do
+        body id: Integer, name: String
+      end
+      root_method :job
     end
-    root_method :job
   end
 end
 
 # Performs GET https://api.example.com/jobs/123
-Purple::Client.job(job_id: 123)
+JobsClient.job(job_id: 123)
 ```
 
 ### Using authorization
 
 ```ruby
-Purple::Client.authorization :bearer, 'TOKEN'
+class ProfileClient < Purple::Client
+  domain 'https://api.example.com'
+  authorization :bearer, 'TOKEN'
 
-Purple::Client.path :profile do
-  response :ok do
-    body :default
+  path :profile do
+    response :ok do
+      body :default
+    end
+    root_method :profile
   end
-  root_method :profile
 end
 
 # Authorization header will be sent automatically
-Purple::Client.profile
+ProfileClient.profile
 ```
 
 ### Nested paths
 
 ```ruby
-Purple::Client.path :users do
-  path :user_id, is_param: true do
-    path :posts do
-      response :ok do
-        body [{ id: Integer, title: String }]
+class PostsClient < Purple::Client
+  domain 'https://api.example.com'
+
+  path :users do
+    path :user_id, is_param: true do
+      path :posts do
+        response :ok do
+          body [{ id: Integer, title: String }]
+        end
+        root_method :user_posts
       end
-      root_method :user_posts
     end
   end
 end
 
 # Performs GET https://api.example.com/users/7/posts
-Purple::Client.user_posts(user_id: 7)
+PostsClient.user_posts(user_id: 7)
 ```
 
 ## Development
