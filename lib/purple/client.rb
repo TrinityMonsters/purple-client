@@ -69,9 +69,13 @@ module Purple
             kw_args[current_path.name] = value
           end
 
+          callback_arguments = additional_callback_arguments.map do |arg|
+            kw_args.delete(arg)
+          end
+
           params = current_path.request.params.call(**kw_args) if current_path.request.params.is_a?(Proc)
 
-          current_path.execute(params, kw_args, &block)
+          current_path.execute(params, kw_args, *callback_arguments, &block)
         end
       end
 
@@ -110,6 +114,14 @@ module Purple
           @paths.find { |path| path.name == method_name }
         else
           super
+        end
+      end
+
+      def additional_callback_arguments(*array)
+        if array.empty?
+          @additional_callback_arguments || []
+        else
+          @additional_callback_arguments = array
         end
       end
     end

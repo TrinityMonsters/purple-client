@@ -32,13 +32,21 @@ module Purple
           child.with(*args)
         end
 
-        child.children.any? ? child : child.execute(*args)
+        if child.children.any?
+          child
+        else
+          callback_arguments = additional_callback_arguments.map do |arg|
+            kw_args.delete(arg)
+          end
+
+          child.execute(*args, *callback_arguments)
+        end
       else
         super
       end
     end
 
-    def execute(params = {}, args = {})
+    def execute(params = {}, args = {}, *callback_arguments)
       headers = {
         'Accept' => 'application/json',
         'Content-Type' => 'application/json'
@@ -81,7 +89,7 @@ module Purple
                    {}
                  end
 
-        client.callback&.call(url, params, headers, JSON.parse(response.body))
+        client.callback&.call(url, params, headers, JSON.parse(response.body), *callback_arguments)
 
         if block_given?
           yield(resp_structure.status, object)
