@@ -100,6 +100,36 @@ end
 PostsClient.user_posts(user_id: 7)
 ```
 
+### Callbacks with additional arguments
+
+```ruby
+class EventsClient < Purple::Client
+  domain 'https://api.example.com'
+
+  additional_callback_arguments :resource
+
+  callback do |url, params, headers, response, resource|
+    StoreEvent.call(url:, params:, headers:, response:, resource:)
+  end
+
+  path :events do
+    response :ok do
+      body :default
+    end
+    root_method :events
+  end
+end
+
+resource = SomeModel.find(1)
+EventsClient.events(resource:)
+```
+
+`additional_callback_arguments` lets you specify parameter names that will be
+extracted from the call and passed to your callback. In the example above the
+`resource` keyword argument is removed from the request parameters, but is
+available inside the callback so you can associate the stored event with a
+record of your choice.
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then run
