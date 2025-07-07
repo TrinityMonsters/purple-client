@@ -49,7 +49,7 @@ class Purple::Responses::Body
       result
     end
   rescue JSON::ParserError => e
-    raise ArgumentError, "Invalid JSON format: #{e.message}"
+    raise ArgumentError, "Invalid JSON format: #{e.message}. Body: #{body.inspect}"
   end
 
   private
