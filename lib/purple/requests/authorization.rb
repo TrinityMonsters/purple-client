@@ -37,7 +37,7 @@ module Purple
           {
             type: :custom_headers,
             data: lambda do
-              headers
+              headers.transform_values(&:to_s)
             end
           }
         end
