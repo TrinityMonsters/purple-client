@@ -74,6 +74,12 @@ module Purple
                    connection.get(url, params)
                  when :post
                    connection.post(url, params.to_json)
+                 when :put
+                   connection.put(url, params.to_json)
+                 when :delete
+                   connection.delete(url, params)
+                 when :patch
+                   connection.patch(url, params.to_json)
                  end
 
       resp_structure = responses.find { |resp| resp.status_code == response.status }

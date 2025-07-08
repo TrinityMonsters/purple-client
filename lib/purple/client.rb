@@ -65,9 +65,8 @@ module Purple
 
         define_singleton_method method_name do |*call_args, **kw_args, &block|
           if current_path.is_param
-            value = kw_args[current_path.name] || call_args.first
+            value = call_args.first
             current_path.with(value)
-            kw_args[current_path.name] = value
           end
 
           callback_arguments = additional_callback_arguments.map do |arg|
