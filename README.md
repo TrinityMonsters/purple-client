@@ -78,6 +78,27 @@ end
 ProfileClient.profile
 ```
 
+### Using custom headers
+
+```ruby
+class CustomHeadersClient < Purple::Client
+  domain 'https://api.example.com'
+  authorization :custom_headers,
+                'X-API-KEY' => 'your-api-key',
+                'X-Secret' => 'your-api-secret'
+
+  path :widgets do
+    response :ok do
+      body :default
+    end
+    root_method :widgets
+  end
+end
+
+# Custom headers will be sent automatically
+CustomHeadersClient.widgets
+```
+
 ### Nested paths
 
 ```ruby
