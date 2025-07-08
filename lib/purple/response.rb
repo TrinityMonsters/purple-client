@@ -13,6 +13,7 @@ class Purple::Response
     ok: 200,
     bad_request: 400,
     unauthorized: 401,
+    unprocessable_entity: 422,
     forbidden: 403,
     not_found: 404,
     too_many_requests: 429,
