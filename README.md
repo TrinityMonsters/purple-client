@@ -174,6 +174,29 @@ class AccountsClient < Purple::Client
 end
 ```
 
+### Optional fields
+
+Sometimes an API response omits certain keys. You can mark those fields as
+optional in the body definition so their absence doesn't raise validation errors.
+
+```ruby
+class CalendarClient < Purple::Client
+  domain 'https://api.example.com'
+
+  path :schedule do
+    response :ok do
+      body(
+        day: { type: Integer, optional: true },
+      )
+    end
+    root_method :schedule
+  end
+end
+
+# The `day` attribute may be missing in the response
+CalendarClient.schedule
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then run
