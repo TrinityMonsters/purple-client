@@ -151,6 +151,29 @@ extracted from the call and passed to your callback. In the example above the
 available inside the callback so you can associate the stored event with a
 record of your choice.
 
+### Boolean response types
+
+If you have boolean types `true` or `false` in your response, use
+`Purple::Boolean` in the response configuration.
+
+```ruby
+class AccountsClient < Purple::Client
+  domain 'https://api.example.com'
+
+  path :accounts do
+    response :ok do
+      body(
+        last_name: String,
+        first_name: String,
+        is_creator: Purple::Boolean,
+        is_premium: Purple::Boolean,
+      )
+    end
+    root_method :accounts
+  end
+end
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then run
