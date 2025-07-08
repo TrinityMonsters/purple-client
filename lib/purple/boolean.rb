@@ -1,0 +1,2 @@
+class Purple::Boolean
+end

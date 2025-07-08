@@ -5,6 +5,7 @@ require 'purple/request'
 require 'purple/requests/authorization'
 require 'purple/response'
 require 'purple/responses/body'
+require 'purple/boolean'
 require_relative "version"
 
 module Purple

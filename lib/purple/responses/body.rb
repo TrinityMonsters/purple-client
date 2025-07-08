@@ -98,6 +98,8 @@ class Purple::Responses::Body
         "Missing field '#{key}' in response body. Body: #{object}"
     end
 
+    return if expected_type == Purple::Boolean && (object[key] == true || object[key] == false)
+
     return if object[key].is_a?(expected_type)
 
     raise BodyStructureMismatchError.new(key, expected_type, object[key], object)
