@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'faraday'
+
 RSpec.describe Purple::Client do
   it "has a version number" do
     expect(Purple::Client::VERSION).not_to be nil

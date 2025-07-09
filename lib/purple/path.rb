@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require 'dry-initializer'
+require 'faraday'
+require 'active_support/core_ext/hash/deep_merge'
 
 module Purple
   class Path
