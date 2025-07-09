@@ -64,10 +64,19 @@ module Purple
       def root_method(method_name)
         current_path = @parent_path
 
+        param_chain = []
+        path_ptr = current_path
+        while path_ptr
+          param_chain << path_ptr if path_ptr.is_param
+          path_ptr = path_ptr.parent
+        end
+
         define_singleton_method method_name do |*call_args, **kw_args, &block|
-          if current_path.is_param
-            value = call_args.first
-            current_path.with(value)
+          chain_args = call_args.dup
+
+          param_chain.reverse_each do |path|
+            value = kw_args.delete(path.name) { chain_args.shift }
+            path.with(value)
           end
 
           callback_arguments = additional_callback_arguments.map do |arg|

@@ -16,8 +16,9 @@ module Purple
     option :responses, optional: true, default: -> { [] }
 
     def full_path
-      current_path = is_param ? @param_value : name
-      parent.nil? ? current_path : "#{parent.full_path}/#{current_path}"
+      current = is_param ? @param_value : name
+      current = current.to_s
+      parent.nil? ? current : "#{parent.full_path}/#{current}"
     end
 
     def with(*args)
