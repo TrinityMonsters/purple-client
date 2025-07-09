@@ -2,6 +2,7 @@
 
 require 'purple/responses'
 require 'purple/responses/object'
+require "active_support/core_ext/string/inflections"
 
 class Purple::Responses::Body
   extend Dry::Initializer[undefined: false]

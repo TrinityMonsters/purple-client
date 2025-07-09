@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require_relative "lib/purple/version"
+require_relative "lib/purple/client/version"
 
 Gem::Specification.new do |spec|
   spec.name = "purple-client"
-  spec.version = Purple::VERSION
+  spec.version = Purple::Client::VERSION
   spec.authors = ["Pavel Kalashnikov"]
   spec.email = ["kalashnikovisme@gmail.com"]
 
@@ -32,4 +32,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency 'dry-initializer'
+  spec.add_dependency 'activesupport'
+  spec.add_dependency 'faraday'
 end
