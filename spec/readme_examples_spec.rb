@@ -15,12 +15,14 @@ RSpec.describe 'README examples' do
 
   let(:executed) { [] }
 
-  around do |example|
+  before do
     allow_any_instance_of(Purple::Path).to receive(:execute) do |instance, params = {}, kw_args = {}, *callback_args|
       executed << { path: instance.full_path, params: params, kw_args: kw_args, callback_args: callback_args }
       :ok
     end
-    example.run
+  end
+
+  after do
     %i[StatusClient JobsClient ProfileClient CustomHeadersClient PostsClient EventsClient AccountsClient CalendarClient].each do |const|
       Object.send(:remove_const, const) if Object.const_defined?(const)
     end

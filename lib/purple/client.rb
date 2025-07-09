@@ -10,6 +10,7 @@ require_relative "version"
 
 module Purple
   class Client
+    VERSION = ::Purple::VERSION
     class << self
       def domain(value = nil)
         if value.nil?
