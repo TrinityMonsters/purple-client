@@ -3,6 +3,7 @@
 require 'dry-initializer'
 require 'faraday'
 require 'active_support/core_ext/hash/deep_merge'
+require 'active_support/core_ext/object/inclusion'
 
 module Purple
   class Path
