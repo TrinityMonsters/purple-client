@@ -197,6 +197,35 @@ end
 CalendarClient.schedule
 ```
 
+### Array responses
+
+When an endpoint returns an array of objects, you can use `:array_of` to
+describe the structure of each element in the array.
+
+```ruby
+class MerchantsClient < Purple::Client
+  domain 'https://api.example.com'
+
+  path :merchants do
+    response :ok do
+      structure = {
+        id: Integer,
+        name: String,
+        address: String,
+        work_time: String,
+        accepts_qr: { type: String, optional: true }
+      }
+
+      body(:array_of, **structure)
+    end
+    root_method :merchants
+  end
+end
+
+# Each array element will be validated against the structure
+MerchantsClient.merchants
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then run
