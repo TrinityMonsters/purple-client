@@ -76,6 +76,8 @@ class Purple::Responses::Body
 
           check_type!(object, key, value[:type])
         else
+          next if object[key].nil?
+
           check_structure!(object[key], substructure[key])
         end
       elsif value.is_a?(Array)
