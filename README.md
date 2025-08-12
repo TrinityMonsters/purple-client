@@ -197,6 +197,30 @@ end
 CalendarClient.schedule
 ```
 
+### Allow blank fields
+
+Some APIs return keys that are present but contain `null` or empty string values.
+You can mark those fields with `allow_blank` so blank values do not raise
+validation errors.
+
+```ruby
+class ProfilesClient < Purple::Client
+  domain 'https://api.example.com'
+
+  path :profile do
+    response :ok do
+      body(
+        middle_name: { type: String, allow_blank: true },
+      )
+    end
+    root_method :profile
+  end
+end
+
+# The `middle_name` attribute may be blank or omitted in the response
+ProfilesClient.profile
+```
+
 ### Array responses
 
 When an endpoint returns an array of objects, you can use `:array_of` to
