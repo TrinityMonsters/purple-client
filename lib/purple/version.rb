@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
 module Purple
-  VERSION = "0.1.7.3"
+  VERSION = "0.1.7.4"
 end
