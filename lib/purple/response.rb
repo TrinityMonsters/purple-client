@@ -12,6 +12,7 @@ class Purple::Response
   CODES = {
     ok: 200,
     created: 201,
+    accepted: 202,
     bad_request: 400,
     unauthorized: 401,
     unprocessable_entity: 422,

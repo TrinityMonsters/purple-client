@@ -27,7 +27,7 @@ module Purple
       @param_value = args.first
     end
 
-    def method_missing(method_name, *args, &)
+    def method_missing(method_name, *args, **kw_args, &)
       if children.any? { |child| child.name == method_name }
         child = children.find { |child| child.name == method_name }
 
@@ -38,7 +38,7 @@ module Purple
         if child.children.any?
           child
         else
-          callback_arguments = additional_callback_arguments.map do |arg|
+          callback_arguments = client.additional_callback_arguments.map do |arg|
             kw_args.delete(arg)
           end
 
