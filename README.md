@@ -121,6 +121,36 @@ end
 PostsClient.user_posts(user_id: 7)
 ```
 
+### Paths nested under parameters
+
+When a path segment is marked with `is_param: true`, any paths nested
+inside it will not have a `root_method` generated. Instead of calling a
+root method, you need to chain the segment methods manually.
+
+```ruby
+class BrowserClient < Purple::Client
+  domain 'https://api.example.com'
+
+  path :browser do
+    path :id, is_param: true do
+      path :web, method: :post do
+        response :ok do
+        end
+
+        response :bad_request do
+          body do |res|
+            puts res
+          end
+        end
+      end
+    end
+  end
+end
+
+# root_method :web will not work here
+BrowserClient.browser.id('123').web
+```
+
 ### Callbacks with additional arguments
 
 ```ruby
