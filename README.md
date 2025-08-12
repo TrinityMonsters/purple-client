@@ -250,6 +250,43 @@ end
 MerchantsClient.merchants
 ```
 
+### Response body processing
+
+After the body structure is validated, you can supply a block to `body`
+to transform or handle the parsed response. This is useful for mapping
+error payloads to simpler return values or for normalizing data.
+
+```ruby
+class MessagesClient < Purple::Client
+  domain 'https://api.example.com'
+
+  path :messages do
+    response :unprocessable_entity do
+      structure = {
+        status: Integer,
+        type: String,
+        title: String,
+        detail: String
+      }
+
+      body(**structure) do |res|
+        case res.type
+        when 'errors/invalid_recipient'
+          :not_found
+        else
+          res
+        end
+      end
+    end
+    root_method :send_message
+  end
+end
+
+# Returns :not_found when the recipient is invalid, otherwise returns the
+# parsed response body.
+MessagesClient.send_message
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then run
