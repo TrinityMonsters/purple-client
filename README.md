@@ -1,4 +1,4 @@
-# Purple::Client
+# Purple Client
 
 Purple::Client is a small DSL that helps you describe HTTP APIs. You define a domain, paths, and response structures, and the library generates handy methods for interacting with your service.
 
@@ -72,6 +72,18 @@ class Amocrm::Client < Purple::Client
       params do |client_id:, client_secret:, redirect_uri:, code:, grant_type: :authorization_code|
         { client_id:, client_secret:, redirect_uri:, code:, grant_type: }
       end
+
+      response :ok do
+        body(
+          token_type: String,
+          expires_in: Integer,
+          server_time: Integer,
+          access_token: String,
+          refresh_token: String
+        )
+      end
+
+      response :bad_request
     end
   end
 end
