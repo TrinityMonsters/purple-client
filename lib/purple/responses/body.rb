@@ -82,6 +82,10 @@ class Purple::Responses::Body
         end
       elsif value.is_a?(Array)
         object[key].each do |item|
+          if value[0].is_a?(Symbol)
+            raise "Body structure definition error in key '#{key}' of structure #{substructure}."
+          end
+
           check_structure!(item, value[0])
         end
       else
