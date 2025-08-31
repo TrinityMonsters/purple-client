@@ -59,6 +59,24 @@ end
 JobsClient.job(123)
 ```
 
+### Simple POST request
+
+```ruby
+class Amocrm::Client < Purple::Client
+  domain 'https://www.amocrm.ru'
+
+  path :oauth2 do
+    path :access_token, method: :post do
+      root_method :access_token
+
+      params do |client_id:, client_secret:, redirect_uri:, code:, grant_type: :authorization_code|
+        { client_id:, client_secret:, redirect_uri:, code:, grant_type: }
+      end
+    end
+  end
+end
+```
+
 ### Using authorization
 
 ```ruby
