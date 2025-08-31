@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    purple-client (0.1.7.2)
+    purple-client (0.1.7.4)
       activesupport
       dry-initializer
       faraday
