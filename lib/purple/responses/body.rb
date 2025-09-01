@@ -100,6 +100,8 @@ class Purple::Responses::Body
   end
 
   def check_type!(object, key, expected_type)
+    return if key.in?([:optional, :allow_blank])
+
     unless object.key?(key)
       raise BodyStructureMismatchError.new(key, expected_type, object[key], object),
         "Missing field '#{key}' in response body. Body: #{object}"
