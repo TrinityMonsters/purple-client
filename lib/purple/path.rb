@@ -4,6 +4,7 @@ require 'dry-initializer'
 require 'faraday'
 require 'active_support/core_ext/hash/deep_merge'
 require 'active_support/core_ext/object/inclusion'
+require 'active_support/core_ext/object/blank'
 
 module Purple
   class Path
@@ -64,6 +65,10 @@ module Purple
 
       connection = Faraday.new(url: client.domain) do |conn|
         conn.headers = headers
+      end
+
+      if client.domain.blank?
+        raise ArgumentError, 'Client domain is not set. Please set the domain in the client configuration.'
       end
 
       unless client.domain.start_with?('http')
