@@ -66,6 +66,10 @@ module Purple
         conn.headers = headers
       end
 
+      if client.domain.blank?
+        raise ArgumentError, 'Client domain is not set. Please set the domain in the client configuration.'
+      end
+
       unless client.domain.start_with?('http')
         raise ArgumentError, "Invalid URL: #{client.domain}. Ensure you have set protocol (http/https) in the client domain."
       end

@@ -81,12 +81,26 @@ class Purple::Responses::Body
           check_structure!(object[key], substructure[key])
         end
       elsif value.is_a?(Array)
-        object[key].each do |item|
-          if value[0].is_a?(Symbol)
-            raise "Body structure definition error in key '#{key}' of structure #{substructure}."
-          end
+        if object[key].nil?
+          raise BodyStructureMismatchError.new(key, value, nil, object),
+            "Expected a non-nil array for '#{key}' in response body.\n\nExpected response structure: #{substructure}.\n\nUse '#{key}: { type: #{value}, allow_blank: true }' if this field can be nil."
+        end
 
-          check_structure!(item, value[0])
+        type = value.first
+
+        if type.is_a?(Symbol)
+          raise "Body structure definition error in key '#{key}' of structure #{substructure}."
+        end
+
+        object[key].each_with_index do |item, index|
+          if type.is_a?(Class)
+            unless item.is_a?(type)
+              raise BodyStructureMismatchError.new(key, type, item, object),
+                "Expected item at #{index} index of '#{key}' to be of type '#{value[index]}', but got '#{item.class}' with value '#{item}'."
+            end
+          else
+            check_structure!(item, type)
+          end
         end
       else
         if object.nil?
@@ -104,7 +118,7 @@ class Purple::Responses::Body
 
     unless object.key?(key)
       raise BodyStructureMismatchError.new(key, expected_type, object[key], object),
-        "Missing field '#{key}' in response body. Body: #{object}"
+        "Missing field '#{key}' in response body. Body: #{object}\n\nUse '#{key}: { type: #{expected_type}, optional: true }' if this field may be absent."
     end
 
     return if expected_type == Purple::Boolean && (object[key] == true || object[key] == false)
