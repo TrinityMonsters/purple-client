@@ -5,9 +5,9 @@ require 'active_support/core_ext/module/delegation'
 class Purple::Responses::Object
   attr_accessor :attributes
 
-  delegate :to_s, to: :attributes
+  delegate :to_s, :[], to: :attributes
 
   def contain?(key)
-    attributes.key?(key)
+    attributes.key?(key.to_sym) || attributes.key?(key.to_s)
   end
 end
