@@ -6,4 +6,8 @@ class Purple::Responses::Object
   attr_accessor :attributes
 
   delegate :to_s, to: :attributes
+
+  def contain?(key)
+    attributes.key?(key)
+  end
 end

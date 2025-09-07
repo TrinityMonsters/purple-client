@@ -68,10 +68,6 @@ class Purple::Responses::Body
           end
         end
       end
-
-      def contain?(key)
-        attributes.key?(key)
-      end
     end.new
 
     klass.attributes = body
