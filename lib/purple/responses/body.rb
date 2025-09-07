@@ -20,29 +20,29 @@ class Purple::Responses::Body
   def validate!(body, arguments)
     parsed_body = JSON.parse(body, symbolize_names: true)
 
-    result = if parsed_body.is_a? Integer
-               parsed_body
-             else
-               underscored_body = if parsed_body.is_a? Array
-                                    parsed_body.map { |item| item.transform_keys { |key| key.to_s.underscore.to_sym } }
-                                  else
-                                    parsed_body.transform_keys { |key| key.to_s.underscore.to_sym }
-                                  end
+    if parsed_body.is_a? Integer
+      parsed_body
+    else
+      underscored_body = if parsed_body.is_a? Array
+                           parsed_body.map { |item| item.transform_keys { |key| key.to_s.underscore.to_sym } }
+                         else
+                           parsed_body.transform_keys { |key| key.to_s.underscore.to_sym }
+                         end
 
-               if underscored_body.is_a? Array
-                 underscored_body.each do |item|
-                   check_structure!(item)
-                 end
-               else
-                 check_structure!(underscored_body)
-               end
+      if underscored_body.is_a? Array
+        underscored_body.each do |item|
+          check_structure!(item)
+        end
+      else
+        check_structure!(underscored_body)
+      end
 
-               if underscored_body.is_a?(Array)
-                 underscored_body.map { |item| create_object(item) }
-               else
-                 create_object(underscored_body)
-               end
-             end
+      if underscored_body.is_a?(Array)
+        underscored_body.map { |item| create_klass(item, structure) }
+      else
+        create_klass(underscored_body, structure)
+      end
+    end => result
 
     if transform.is_a?(Proc)
       transform.call(result, arguments)
@@ -55,16 +55,28 @@ class Purple::Responses::Body
 
   private
 
-  def create_object(body)
-    object = Class.new(Purple::Responses::Object) do
+  def create_klass(body, structure)
+    klass = Class.new(Purple::Responses::Object) do
       body.each do |key, value|
         define_method(key) { value }
       end
+
+      structure.each do |key, value|
+        if value.is_a?(Hash) && value[:optional] == true && !body.key?(key)
+          define_method(key) do
+            raise NoMethodError, "Optional field '#{key}' is not present in the response body. Use `contain?(:#{key})` to check its presence."
+          end
+        end
+      end
+
+      def contain?(key)
+        attributes.key?(key)
+      end
     end.new
 
-    object.attributes = body
+    klass.attributes = body
 
-    object
+    klass
   end
 
   def check_structure!(object, substructure = structure)
