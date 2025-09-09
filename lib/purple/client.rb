@@ -37,6 +37,14 @@ module Purple
         end
       end
 
+      def timeout(value)
+        if value.is_a?(Integer) && value.positive?
+          @timeout = value
+        else
+          raise ArgumentError, 'Timeout must be a positive integer'
+        end
+      end
+
       def callback(&block)
         if block_given?
           @callback = block
