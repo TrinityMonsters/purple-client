@@ -37,6 +37,14 @@ module Purple
         end
       end
 
+      def timeout(value = nil)
+        if value.nil?
+          @timeout
+        else
+          @timeout = value
+        end
+      end
+
       def callback(&block)
         if block_given?
           @callback = block

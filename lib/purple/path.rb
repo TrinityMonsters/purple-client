@@ -64,6 +64,7 @@ module Purple
       end
 
       connection = Faraday.new(url: client.domain) do |conn|
+        conn.options.timeout = client.timeout if client.timeout.present?
         conn.headers = headers
       end
 
