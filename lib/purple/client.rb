@@ -37,7 +37,7 @@ module Purple
         end
       end
 
-      def timeout(value)
+      def timeout(value = nil)
         if value.is_a?(Integer) && value.positive?
           @timeout = value
         else
