@@ -38,10 +38,10 @@ module Purple
       end
 
       def timeout(value = nil)
-        if value.is_a?(Integer) && value.positive?
-          @timeout = value
+        if value.nil?
+          @timeout
         else
-          raise ArgumentError, 'Timeout must be a positive integer'
+          @timeout = value
         end
       end
 
