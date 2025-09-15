@@ -193,6 +193,17 @@ RSpec.describe Unipile::Linkedin::PurpleClient do
 
       expect(result).to eq(:not_found)
     end
+
+    it 'encodes special characters in user_id' do
+      encoded_url = 'https://api4.unipile.com:13451/api/v1/users/%E2%9A%A1%EF%B8%8Fdenis-cooperman-a82021201'
+      response = instance_double(Faraday::Response, status: 404, body: {}.to_json)
+
+      expect(connection).to receive(:get).with(encoded_url, { account_id: 8 }).and_return(response)
+
+      result = described_class.get_user('⚡️denis-cooperman-a82021201', account_id: 8, resource: resource)
+
+      expect(result).to eq(:not_found)
+    end
   end
 end
 
