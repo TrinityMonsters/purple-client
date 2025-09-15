@@ -5,6 +5,7 @@ require 'faraday'
 require 'active_support/core_ext/hash/deep_merge'
 require 'active_support/core_ext/object/inclusion'
 require 'active_support/core_ext/object/blank'
+require 'cgi'
 
 module Purple
   class Path
@@ -20,7 +21,12 @@ module Purple
     option :responses, optional: true, default: -> { [] }
 
     def full_path
-      current_path = is_param ? @param_value : name
+      current_path = if is_param
+                       CGI.escape(@param_value.to_s)
+                     else
+                       name
+                     end
+
       parent.nil? ? current_path : "#{parent.full_path}/#{current_path}"
     end
 
