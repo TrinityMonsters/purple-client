@@ -89,9 +89,9 @@ class Purple::Responses::Body
           check_structure!(object[key], substructure[key])
         end
       elsif value.is_a?(Array)
-        if object[key].nil?
+        if object[key].blank?
           raise BodyStructureMismatchError.new(key, value, nil, object),
-            "Expected a non-nil array for '#{key}' in response body.\n\nExpected response structure: #{substructure}.\n\nUse '#{key}: { type: #{value}, allow_blank: true }' if this field can be nil."
+            "Expected a non-nil array for '#{key}' in response body.\n\nExpected response structure: #{substructure}.\n\nUse '#{key}: { type: #{value}, allow_blank: true }' if this field can be nil, blank or empty."
         end
 
         type = value.first
