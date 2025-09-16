@@ -82,6 +82,8 @@ class Purple::Responses::Body
           next if value[:optional]
           next if value[:allow_blank] && object[key].blank?
 
+          raise BodyStructureMismatchError.new(key, value[:type], object[key], object) if object[key].is_a?(Array)
+
           check_type!(object, key, value[:type])
         else
           next if object[key].nil?
