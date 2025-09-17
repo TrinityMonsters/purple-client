@@ -82,9 +82,11 @@ class Purple::Responses::Body
           next if value[:optional]
           next if value[:allow_blank] && object[key].blank?
 
-          raise BodyStructureMismatchError.new(key, value[:type], object[key], object) if object[key].is_a?(Array)
-
-          check_type!(object, key, value[:type])
+          if object[key].is_a?(Array)
+            check_array!(object, key, value[:type].first, substructure[key][:type].first)
+          else
+            check_type!(object, key, value[:type])
+          end
         else
           next if object[key].nil?
 
@@ -96,22 +98,7 @@ class Purple::Responses::Body
             "Expected a non-nil array for '#{key}' in response body.\n\nExpected response structure: #{substructure}.\n\nUse '#{key}: { type: #{value}, allow_blank: true }' if this field can be nil, blank or empty."
         end
 
-        type = value.first
-
-        if type.is_a?(Symbol)
-          raise "Body structure definition error in key '#{key}' of structure #{substructure}."
-        end
-
-        object[key].each_with_index do |item, index|
-          if type.is_a?(Class)
-            unless item.is_a?(type)
-              raise BodyStructureMismatchError.new(key, type, item, object),
-                "Expected item at #{index} index of '#{key}' to be of type '#{value[index]}', but got '#{item.class}' with value '#{item}'."
-            end
-          else
-            check_structure!(item, type)
-          end
-        end
+        check_array!(object, key, value.first, substructure)
       else
         if object.nil?
           raise BodyStructureMismatchError.new(key, value, nil, object),
@@ -119,6 +106,23 @@ class Purple::Responses::Body
         else
           check_type!(object, key, value)
         end
+      end
+    end
+  end
+
+  def check_array!(object, key, type, substructure)
+    if type.is_a?(Symbol)
+      raise "Body structure definition error in key '#{key}' of structure #{substructure}."
+    end
+
+    object[key].each_with_index do |item, index|
+      if type.is_a?(Class)
+        unless item.is_a?(type)
+          raise BodyStructureMismatchError.new(key, type, item, object),
+            "Expected item at #{index} index of '#{key}' to be of type '#{value[index]}', but got '#{item.class}' with value '#{item}'."
+        end
+      else
+        check_structure!(item, type)
       end
     end
   end
