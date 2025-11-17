@@ -21,11 +21,11 @@ module Purple
     option :responses, optional: true, default: -> { [] }
 
     def full_path
-      current_path = if is_param
-                       CGI.escape(@param_value.to_s)
-                     else
-                       name
-                     end
+      if is_param
+        CGI.escape(@param_value.to_s)
+      else
+        name
+      end => current_path
 
       parent.nil? ? current_path : "#{parent.full_path}/#{current_path}"
     end
@@ -84,33 +84,39 @@ module Purple
 
       url = "#{client.domain}/#{full_path}"
 
-      response = case method
-                 when :get
-                   connection.get(url, params)
-                 when :post
-                   connection.post(url, params.to_json)
-                 when :put
-                   connection.put(url, params.to_json)
-                 when :delete
-                   connection.delete(url, params)
-                 when :patch
-                   connection.patch(url, params.to_json)
-                 end
+      case method
+      when :get
+        connection.get(url, params)
+      when :post
+        connection.post(url, params.to_json)
+      when :put
+        connection.put(url, params.to_json)
+      when :delete
+        connection.delete(url, params)
+      when :patch
+        connection.patch(url, params.to_json)
+      end => response
 
       resp_structure = responses.find { |resp| resp.status_code == response.status }
 
       if resp_structure.nil?
         raise "#{client.domain}/#{full_path} returns #{response.status}, but it is not defined in the client"
       else
-        object = if resp_structure.body.is_a?(Purple::Responses::Body)
-                   resp_structure.body.validate!(response.body, args)
-                 elsif resp_structure.body == :default
-                   response.body
-                 else
-                   {}
-                 end
+        if response.body.blank? && !resp_structure.body.nil? && resp_structure.body != :default
+          raise "#{client.domain}/#{full_path} returns empty body, but it is defined in the client. Do not define body for empty responses or set it to :default to skip validation.\n\nSee https://github.com/trinitymonsters/purple-client?tab=readme-ov-file#simple-get-request\n"
+        end
 
-        client.callback&.call(url, params, headers, JSON.parse(response.body), *callback_arguments)
+        if resp_structure.body.is_a?(Purple::Responses::Body)
+          resp_structure.body.validate!(response.body, args)
+        elsif resp_structure.body == :default
+          response.body
+        else
+          {}
+        end => object
+
+        raw_body = response.body.blank? ? {} : JSON.parse(response.body)
+
+        client.callback&.call(url, params, headers, raw_body, *callback_arguments)
 
         if block_given?
           yield(resp_structure.status, object)
