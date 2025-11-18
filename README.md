@@ -39,6 +39,10 @@ end
 StatusClient.status
 ```
 
+> **Note:** If your API responds with an empty body (for example, a `204` or a `200` without a payload), do not declare a
+> response `body` structure for that status. Either omit `body` entirely or set `body :default` so Purple::Client skips
+> validation—otherwise the client will raise an error to alert you that the declared structure can never be satisfied.
+
 ### Path with a dynamic parameter
 
 ```ruby
