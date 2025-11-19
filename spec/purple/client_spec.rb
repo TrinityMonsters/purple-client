@@ -175,6 +175,30 @@ RSpec.describe Unipile::Linkedin::PurpleClient do
       expect(result).to eq(:sent)
       expect(headers['X-API-KEY']).to eq('secret')
     end
+
+    context 'when API responds with an empty body' do
+      it 'raises a helpful error when the body is an empty string' do
+        response = instance_double(Faraday::Response,
+                                   status: 201,
+                                   body: '')
+        allow(connection).to receive(:post).and_return(response)
+
+        expect do
+          described_class.linkedin_invite(provider_id: 1, account_id: 2, message: 'hi', resource: resource)
+        end.to raise_error(/returns empty body, but it is defined in the client/)
+      end
+
+      it 'raises a helpful error when the body is nil' do
+        response = instance_double(Faraday::Response,
+                                   status: 201,
+                                   body: nil)
+        allow(connection).to receive(:post).and_return(response)
+
+        expect do
+          described_class.linkedin_invite(provider_id: 1, account_id: 2, message: 'hi', resource: resource)
+        end.to raise_error(/returns empty body, but it is defined in the client/)
+      end
+    end
   end
 
   describe '.get_user' do
