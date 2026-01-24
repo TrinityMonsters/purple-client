@@ -1,0 +1,145 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "fileutils"
+require "optparse"
+
+def usage
+  <<~USAGE
+    Usage:
+      bin/purple-client scaffold PROVIDER_NAME [--force]
+  USAGE
+end
+
+def camelize(name)
+  name.split(/[_-]/).map { |part| part.capitalize }.join
+end
+
+def normalize_provider(name)
+  name.strip.tr("-", "_")
+end
+
+command = ARGV.shift
+
+case command
+when "scaffold"
+  options = { force: false }
+  parser = OptionParser.new do |opts|
+    opts.on("--force", "Overwrite existing files") { options[:force] = true }
+  end
+  parser.parse!(ARGV)
+
+  provider_name = ARGV.shift
+  if provider_name.nil? || provider_name.strip.empty?
+    warn usage
+    exit 1
+  end
+
+  provider_name = normalize_provider(provider_name)
+  module_name = camelize(provider_name)
+
+  files = {
+    "lib/#{provider_name}/client.rb" => <<~RUBY,
+      # frozen_string_literal: true
+
+      require "purple/client"
+
+      module #{module_name}
+        class Client < Purple::Client
+          domain "https://api.provider.example"
+
+          path :resource do
+            params do |id:, verbose: nil|
+              { id: id, verbose: verbose }.compact
+            end
+
+            response :ok do
+              body(
+                id: Integer,
+                name: String,
+                active: Purple::Boolean,
+                metadata: {
+                  created_at: String,
+                  tags: { type: Array, optional: true }
+                }
+              )
+            end
+
+            response :bad_request do
+              body(
+                error: String,
+                message: { type: String, allow_blank: true }
+              )
+            end
+
+            root_method :fetch_resource
+          end
+        end
+      end
+    RUBY
+    "lib/#{provider_name}/version.rb" => <<~RUBY,
+      # frozen_string_literal: true
+
+      module #{module_name}
+        VERSION = "0.1.0"
+      end
+    RUBY
+    "lib/#{provider_name}/README.md" => <<~MARKDOWN,
+      # #{module_name} Wrapper
+
+      This is a generated Purple::Client wrapper skeleton.
+
+      ## Usage
+
+      ```ruby
+      #{module_name}::Client.fetch_resource(id: 123)
+      ```
+    MARKDOWN
+    "spec/#{provider_name}/client_spec.rb" => <<~RUBY,
+      # frozen_string_literal: true
+
+      require "spec_helper"
+      require "webmock/rspec"
+      require "#{provider_name}/client"
+
+      RSpec.describe #{module_name}::Client do
+        it "fetches the resource" do
+          stub_request(:get, "https://api.provider.example/resource")
+            .with(query: { "id" => "123" })
+            .to_return(
+              status: 200,
+              body: {
+                id: 123,
+                name: "Example",
+                active: true,
+                metadata: { created_at: "2024-01-01" }
+              }.to_json,
+              headers: { "Content-Type" => "application/json" }
+            )
+
+          response = described_class.fetch_resource(id: 123)
+
+          expect(response.id).to eq(123)
+          expect(response.active).to eq(true)
+        end
+      end
+    RUBY
+  }
+
+  existing = files.keys.select { |path| File.exist?(path) }
+  if existing.any? && !options[:force]
+    warn "Refusing to overwrite existing files:\n#{existing.join("\n")}\n\nRe-run with --force to overwrite."
+    exit 1
+  end
+
+  files.each do |path, contents|
+    FileUtils.mkdir_p(File.dirname(path))
+    File.write(path, contents)
+  end
+
+  puts "Created files:"
+  files.keys.each { |path| puts "  #{path}" }
+else
+  warn usage
+  exit 1
+end
