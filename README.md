@@ -2,6 +2,10 @@
 
 Purple::Client is a small DSL that helps you describe HTTP APIs. You define a domain, paths, and response structures, and the library generates handy methods for interacting with your service.
 
+## For AI / agents
+
+See [AGENTS.md](AGENTS.md) for an LLM-focused guide, naming conventions, and a copy-paste wrapper skeleton.
+
 ## Installation
 
 Add the gem to your project:
@@ -347,6 +351,34 @@ end
 MessagesClient.send_message
 ```
 
+## How to build a wrapper client (5 steps)
+
+1. **Define a `domain`** for the API host.
+2. **Build the `path` tree** to reflect the API routes.
+3. **Describe inputs** with `params` and request body fields as needed.
+4. **Describe responses** with `response` blocks and `body` schemas.
+5. **Set `root_method`** and add call examples in docs or specs.
+
+Helpful references:
+- [AGENTS.md](AGENTS.md) (LLM wrapper guide + skeleton)
+- [OpenAPI mapping](docs/openapi_mapping.md)
+- [Testing wrappers](docs/testing_wrappers.md)
+- [Real-world example: exchangerate.host](examples/real_world/exchangerate_host/README.md)
+
+## Scaffold a wrapper client
+
+Generate a new wrapper skeleton with the built-in scaffold command:
+
+```bash
+bin/purple-client scaffold PROVIDER_NAME
+```
+
+Use `--force` to overwrite existing files:
+
+```bash
+bin/purple-client scaffold PROVIDER_NAME --force
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then run
@@ -367,4 +399,3 @@ to the [code of conduct](https://github.com/[USERNAME]/purple-client/blob/main/C
 
 The gem is available as open source under the terms of the
 [MIT License](https://opensource.org/licenses/MIT).
-
