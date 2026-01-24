@@ -38,7 +38,7 @@ ruby -r "./examples/real_world/exchangerate_host/client" -e "puts ExchangerateHo
 ExchangerateHost::Client.live(base: "USD", symbols: "EUR")
 # => #<Purple::Responses::Object ...>
 # response.base #=> "USD"
-# response.rates[:eur] #=> 0.92
+# response.rates[:"EUR"] #=> 0.92
 
 ExchangerateHost::Client.historical("2020-01-01", base: "USD", symbols: "EUR")
 # => #<Purple::Responses::Object ...>

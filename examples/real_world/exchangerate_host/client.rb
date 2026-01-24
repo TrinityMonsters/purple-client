@@ -16,10 +16,7 @@ module ExchangerateHost
           success: Purple::Boolean,
           base: String,
           date: String,
-          rates: {
-            usd: { type: Float, optional: true },
-            eur: { type: Float, optional: true }
-          }
+          rates: { type: Hash, allow_blank: true }
         )
       end
 
@@ -48,10 +45,7 @@ module ExchangerateHost
             success: Purple::Boolean,
             base: String,
             date: String,
-            rates: {
-              usd: { type: Float, optional: true },
-              eur: { type: Float, optional: true }
-            }
+            rates: { type: Hash, allow_blank: true }
           )
         end
 

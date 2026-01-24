@@ -22,7 +22,7 @@ RSpec.describe ExchangerateHost::Client do
     response = described_class.live(base: "USD", symbols: "EUR")
 
     expect(response.base).to eq("USD")
-    expect(response.rates[:eur]).to eq(0.92)
+    expect(response.rates[:"EUR"]).to eq(0.92)
   end
 
   it "returns the converted amount from the transform block" do
@@ -59,7 +59,7 @@ RSpec.describe ExchangerateHost::Client do
 
     response = described_class.live(base: "USD")
 
-    expect(response.error.type).to eq("invalid_base")
-    expect(response.error.info).to be_nil
+    expect(response.error[:type]).to eq("invalid_base")
+    expect(response.error[:info]).to be_nil
   end
 end
