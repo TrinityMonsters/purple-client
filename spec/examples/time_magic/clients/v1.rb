@@ -1,3 +1,5 @@
-path :v1 do
-  path :status
+path :api do
+  path :v1 do
+    path :status
+  end
 end
