@@ -70,8 +70,14 @@ module Purple
       end
 
       def draw(path)
-        caller_location = caller_locations(1, 1).first
-        caller_file = caller_location.absolute_path || caller_location.path
+        caller_location = caller_locations.find do |location|
+          file = location.absolute_path || location.path
+          file && !file.start_with?('(') && !file.end_with?('/lib/purple/client.rb')
+        end
+
+        caller_file = caller_location&.absolute_path || caller_location&.path
+        raise LoadError, 'Unable to resolve caller file for draw' if caller_file.nil?
+
         file_path = path.to_s.end_with?('.rb') ? path.to_s : "#{path}.rb"
         absolute_path = File.expand_path(file_path, File.dirname(caller_file))
 

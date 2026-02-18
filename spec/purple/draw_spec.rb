@@ -5,6 +5,7 @@ RSpec.describe '.draw' do
     api_path = TimeMagic::Client.api
 
     expect(api_path.children.map(&:name)).to include(:v1)
+    expect(api_path.children.map(&:name)).not_to include(:api)
     expect(api_path.v1.children.map(&:name)).to include(:status)
   end
 end
