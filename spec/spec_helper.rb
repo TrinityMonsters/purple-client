@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "purple/client"
+require_relative 'examples/time_magic/client'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
