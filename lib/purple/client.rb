@@ -69,6 +69,22 @@ module Purple
         @parent_path = path.parent
       end
 
+      def draw(file_name)
+        caller_file = caller_locations(1, 1).first&.absolute_path
+        caller_file ||= caller_locations(1, 1).first&.path
+
+        raise LoadError, 'Could not detect caller file for draw' if caller_file.nil?
+
+        source_file = file_name.to_s
+        source_file += '.rb' unless source_file.end_with?('.rb')
+
+        path = File.expand_path(source_file, File.dirname(caller_file))
+
+        raise LoadError, "Cannot load DSL file -- #{path}" unless File.exist?(path)
+
+        instance_eval(File.read(path), path, 1)
+      end
+
       def root_method(method_name)
         current_path = @parent_path
 

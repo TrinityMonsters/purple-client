@@ -145,6 +145,14 @@ class Unipile::Linkedin::PurpleClient < Purple::Client
   end
 end
 
+class DrawnClient < Purple::Client
+  domain 'https://example.com'
+
+  path :api do
+    draw 'support/drawn_client/v1'
+  end
+end
+
 RSpec.describe Unipile::Linkedin::PurpleClient do
   let(:resource) { double(:resource) }
   let(:headers) { {} }
@@ -207,3 +215,26 @@ RSpec.describe Unipile::Linkedin::PurpleClient do
   end
 end
 
+RSpec.describe DrawnClient do
+  let(:connection) { double('connection') }
+
+  before do
+    allow(connection).to receive(:headers=)
+    allow(Faraday).to receive(:new).and_yield(connection).and_return(connection)
+  end
+
+  describe '.warehouses' do
+    it 'loads nested paths and root methods from an external file' do
+      response = instance_double(Faraday::Response,
+                                 status: 200,
+                                 body: { warehouses: [{ id: 1, name: 'Main' }] }.to_json)
+
+      expect(connection).to receive(:get).with('https://example.com/api/v1/warehouses', {}).and_return(response)
+
+      result = described_class.warehouses
+
+      expect(result.warehouses.first.id).to eq(1)
+      expect(result.warehouses.first.name).to eq('Main')
+    end
+  end
+end
