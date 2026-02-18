@@ -78,11 +78,11 @@ module Purple
         source_file = file_name.to_s
         source_file += '.rb' unless source_file.end_with?('.rb')
 
-        path = File.expand_path(source_file, File.dirname(caller_file))
+        source_path = File.expand_path(source_file, File.dirname(caller_file))
 
-        raise LoadError, "Cannot load DSL file -- #{path}" unless File.exist?(path)
+        raise LoadError, "Cannot load DSL file -- #{source_path}" unless File.exist?(source_path)
 
-        instance_eval(File.read(path), path, 1)
+        instance_eval(File.read(source_path), source_path, 1)
       end
 
       def root_method(method_name)
