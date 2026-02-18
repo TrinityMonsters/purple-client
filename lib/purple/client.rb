@@ -69,6 +69,13 @@ module Purple
         @parent_path = path.parent
       end
 
+      def draw(path)
+        caller_file = caller_locations(1, 1).first.path
+        absolute_path = File.expand_path("#{path}.rb", File.dirname(caller_file))
+
+        class_eval(File.read(absolute_path), absolute_path)
+      end
+
       def root_method(method_name)
         current_path = @parent_path
 
