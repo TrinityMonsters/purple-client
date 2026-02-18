@@ -19,6 +19,9 @@ module InheritanceSpec
   class InheritedClient < BaseClient
   end
 
+  class ChildClient < InheritedClient
+  end
+
   class OverriddenClient < BaseClient
     domain 'https://other.example.com'
     authorization :custom_headers, 'Authorization' => 'Bearer different-token'
@@ -52,6 +55,17 @@ RSpec.describe Purple::Client do
 
       expect(headers).to include('Authorization' => 'Bearer token')
       expect(InheritanceSpec::InheritedClient.authorization).to eq(InheritanceSpec::BaseClient.authorization)
+    end
+
+    it 'inherits domain and authorization in child class' do
+      response = instance_double(Faraday::Response, status: 200, body: { ok: true }.to_json)
+      expect(connection).to receive(:get).with('https://example.com/status', {}).and_return(response)
+
+      InheritanceSpec::ChildClient.status
+
+      expect(headers).to include('Authorization' => 'Bearer token')
+      expect(InheritanceSpec::ChildClient.domain).to eq('https://example.com')
+      expect(InheritanceSpec::ChildClient.authorization).to eq(InheritanceSpec::BaseClient.authorization)
     end
 
     it 'allows overriding inherited domain and authorization' do
