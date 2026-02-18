@@ -81,13 +81,21 @@ Use `draw` to keep large wrappers readable by splitting DSL declarations into
 smaller files.
 
 ```ruby
-module ProviderName
-  class Client < Purple::Client
-    domain "https://api.provider.example"
+# clients/payments/client.rb
+class Payments::Client < Purple::Client
+  domain 'https://api.example.com'
 
-    draw "paths/rates"
-    draw "paths/convert.rb"
+  draw 'paths/invoices'
+  draw 'paths/refunds.rb'
+end
+
+# clients/payments/paths/invoices.rb
+path :invoices do
+  response :ok do
+    body :default
   end
+
+  root_method :invoices
 end
 ```
 
