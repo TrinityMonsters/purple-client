@@ -14,7 +14,7 @@ module Purple
     class << self
       def domain(value = nil)
         if value.nil?
-          @domain || inherited_domain
+          @domain
         else
           @domain = value
         end
@@ -22,7 +22,7 @@ module Purple
 
       def authorization(type = nil, value = nil, **custom_options)
         if type.nil? && value.nil? && custom_options.empty?
-          @authorization || inherited_authorization
+          @authorization
         else
           @authorization = case type
                            when :bearer
@@ -134,14 +134,14 @@ module Purple
         end
       end
 
-      private
-
-      def inherited_domain
-        superclass.domain if superclass.respond_to?(:domain)
+      def __initialize_domain(subclass)
+        subclass.instance_variable_set(:@domain, [])
       end
 
-      def inherited_authorization
-        superclass.authorization if superclass.respond_to?(:authorization)
+      def inherited(subclass)
+        __initialize_domain subclass
+
+        super
       end
     end
   end
