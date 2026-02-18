@@ -99,12 +99,6 @@ path :invoices do
 end
 ```
 
-`draw` paths are resolved relative to the file where `draw` is called, and
-`.rb` is appended when the extension is omitted.
-
-In drawn files, keep content strictly declarative DSL (`path`, `params`,
-`response`, `body`, `root_method`). Do not add business logic.
-
 ## DO / DON'T (for LLMs)
 
 **DO**
