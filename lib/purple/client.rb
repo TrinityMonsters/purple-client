@@ -54,16 +54,16 @@ module Purple
       end
 
       def path(name, method: :get, is_param: false)
-        parent_path = @parent_path || @draw_parent_path
-        path = Path.new(name:, parent: parent_path, method:, client: self, is_param:)
+        path = Path.new(name:, parent: @parent_path, method:, client: self, is_param:)
+
         caller_location = caller_locations(1, 1).first
-        definition_file = caller_location.absolute_path || caller_location.path
+        definition_file = @current_dsl_file || caller_location.absolute_path || caller_location.path
         path.instance_variable_set(:@definition_file, definition_file)
 
         @paths ||= []
         @paths << path
 
-        parent_path.children << path if parent_path
+        @parent_path.children << path if @parent_path
 
         if block_given?
           @parent_path = path
@@ -75,22 +75,23 @@ module Purple
 
       def draw(path)
         base_file = @parent_path&.instance_variable_get(:@definition_file)
+
         if base_file.nil?
           caller_location = caller_locations(1, 1).first
-          base_file = caller_location.absolute_path || caller_location.path
+          base_file = @current_dsl_file || caller_location.absolute_path || caller_location.path
         end
 
         file_path = path.to_s.end_with?('.rb') ? path.to_s : "#{path}.rb"
         absolute_path = File.expand_path(file_path, File.dirname(base_file))
 
         previous_parent_path = @parent_path
-        previous_draw_parent_path = @draw_parent_path
-        @draw_parent_path = @parent_path
+        previous_current_dsl_file = @current_dsl_file
+        @current_dsl_file = absolute_path
 
-        instance_eval(File.read(absolute_path), absolute_path, 1)
+        class_eval(File.read(absolute_path), absolute_path, 1)
       ensure
         @parent_path = previous_parent_path
-        @draw_parent_path = previous_draw_parent_path
+        @current_dsl_file = previous_current_dsl_file
       end
 
       def root_method(method_name)
