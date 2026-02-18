@@ -351,6 +351,36 @@ end
 MessagesClient.send_message
 ```
 
+### Splitting large wrappers with `draw`
+
+If a wrapper gets too long, you can move parts of the DSL into separate files
+and load them with `draw`.
+
+`draw` resolves paths relative to the file where it is called. If you omit the
+extension, `.rb` is added automatically.
+
+```ruby
+# clients/payments/client.rb
+class Payments::Client < Purple::Client
+  domain 'https://api.example.com'
+
+  draw 'paths/invoices'
+  draw 'paths/refunds.rb'
+end
+
+# clients/payments/paths/invoices.rb
+path :invoices do
+  response :ok do
+    body :default
+  end
+  root_method :invoices
+end
+```
+
+Use `draw` only to organize DSL definitions (`path`, `params`, `response`,
+`root_method`) into smaller files. Keep wrapper behavior declarative and avoid
+adding non-DSL business logic in drawn files.
+
 ## How to build a wrapper client (5 steps)
 
 1. **Define a `domain`** for the API host.

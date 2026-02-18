@@ -74,6 +74,29 @@ When adding a new wrapper, follow this structure:
   body(result: Float) { |res| res.result }
   ```
 
+
+## Organizing wrappers with `draw`
+
+Use `draw` to keep large wrappers readable by splitting DSL declarations into
+smaller files.
+
+```ruby
+module ProviderName
+  class Client < Purple::Client
+    domain "https://api.provider.example"
+
+    draw "paths/rates"
+    draw "paths/convert.rb"
+  end
+end
+```
+
+`draw` paths are resolved relative to the file where `draw` is called, and
+`.rb` is appended when the extension is omitted.
+
+In drawn files, keep content strictly declarative DSL (`path`, `params`,
+`response`, `body`, `root_method`). Do not add business logic.
+
 ## DO / DON'T (for LLMs)
 
 **DO**
